@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1 — 2026-11-15
+
+- Fix: the sensor list in the settings opened empty every time, even though the sensors were saved.
+
 ## 1.0.0 — 2026-11-15
 
 - First public version.

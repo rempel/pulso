@@ -30,6 +30,16 @@ KCM.SimpleKCM {
     property int cfg_tempWarnDefault
     property int cfg_tempCritDefault
 
+    // Plasma fills cfg_sensors after the page is created, so the picker has to
+    // follow it (not just read it once), or it opens empty every time.
+    onCfg_sensorsChanged: syncPicker()
+    function syncPicker() {
+        const saved = Array.from(cfg_sensors || [])
+        if (JSON.stringify(saved) !== JSON.stringify(Array.from(choices.selected || []))) {
+            choices.selected = saved
+        }
+    }
+
     Kirigami.FormLayout {
         // KDE's own sensor picker: search, pick any sensor, drag to reorder
         Faces.Choices {
@@ -39,7 +49,7 @@ KCM.SimpleKCM {
             Layout.minimumWidth: Kirigami.Units.gridUnit * 18
             supportsColors: false
             labelsEditable: false
-            Component.onCompleted: selected = Array.from(page.cfg_sensors)
+            Component.onCompleted: page.syncPicker()
             onSelectedChanged: {
                 // Only write back real changes, so opening the dialog doesn't mark it as modified
                 const next = Array.from(selected || []);
