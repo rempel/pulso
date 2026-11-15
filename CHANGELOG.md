@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 — unreleased
+## 1.0.0 — 2026-11-15
 
 - First public version.
 - Panel view: icon + value for any ksystemstats sensor, chosen with KDE's sensor picker.
