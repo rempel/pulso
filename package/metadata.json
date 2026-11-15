@@ -8,7 +8,7 @@
         "Category": "System Information",
         "Authors": [{ "Name": "Gabriel Rempel" }],
         "License": "GPL-3.0-or-later",
-        "Version": "1.0.1",
+        "Version": "2.0.0",
         "Website": "https://github.com/rempel/pulso",
         "BugReportUrl": "https://github.com/rempel/pulso/issues"
     },

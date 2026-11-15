@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Pure helpers shared by the panel and the popup.
+// Pure helpers shared by the panel, the desktop cards, the popup and the settings.
 .pragma library
 
 function valid(v) {
@@ -23,7 +23,7 @@ function iconFor(sensorId) {
     return "pulse";
 }
 
-// Compact transfer rate for the panel: "512 B/s", "84 K/s", "1.2 M/s"
+// Compact transfer rate: "512 B/s", "84 K/s", "1.2 M/s"
 function speed(bytes) {
     if (!valid(bytes)) return "–";
     if (bytes < 1024) return Math.round(bytes) + " B/s";
@@ -47,4 +47,66 @@ function level(value, warn, crit) {
     if (value >= crit) return 2;
     if (value >= warn) return 1;
     return 0;
+}
+
+function fixed(value, decimals) {
+    return Number(value).toFixed(Math.max(0, Math.min(3, decimals)));
+}
+
+// ── Per-sensor styles (stored as JSON in the "styles" config key) ──────────
+
+function parseStyles(json) {
+    try {
+        const o = JSON.parse(json || "{}");
+        return o && typeof o === "object" && !Array.isArray(o) ? o : {};
+    } catch (e) {
+        return {};
+    }
+}
+
+const ACTIONS = ["", "popup", "monitor", "terminal", "none"];
+
+// Normalized style for one sensor, with defaults filled in.
+function styleFor(styles, sensorId) {
+    const s = (styles && styles[sensorId]) || {};
+    return {
+        label: typeof s.label === "string" ? s.label : "",
+        icon: typeof s.icon === "string" ? s.icon : "",
+        iconMask: s.iconMask !== false,
+        color: typeof s.color === "string" && /^#[0-9a-fA-F]{6,8}$/.test(s.color) ? s.color : "",
+        decimals: typeof s.decimals === "number" && s.decimals >= 0 && s.decimals <= 3 ? s.decimals : -1,
+        action: ACTIONS.indexOf(s.action) >= 0 ? s.action : ""
+    };
+}
+
+// Returns a copy of `styles` with one field of one sensor changed.
+// Default values are dropped so the stored JSON stays small.
+function withStyle(styles, sensorId, key, value) {
+    const out = JSON.parse(JSON.stringify(styles || {}));
+    const s = out[sensorId] || {};
+    s[key] = value;
+    const defaults = { label: "", icon: "", iconMask: true, color: "", decimals: -1, action: "" };
+    for (const k in defaults) {
+        if (s[k] === defaults[k]) delete s[k];
+    }
+    if (Object.keys(s).length === 0) delete out[sensorId];
+    else out[sensorId] = s;
+    return out;
+}
+
+// Icon source for Kirigami.Icon: custom file, theme icon name, or bundled icon.
+// `bundledBase` is the URL of the icons folder (ends with "/").
+function iconSource(style, sensorId, bundledBase) {
+    if (style.icon.indexOf("file:") === 0) return style.icon;
+    if (style.icon.indexOf("theme:") === 0) return style.icon.substring(6);
+    return bundledBase + "pulso-" + iconFor(sensorId) + ".svg";
+}
+
+// Only fixed, built-in commands: nothing from the config is ever executed.
+function command(action) {
+    if (action === "monitor") return "plasma-systemmonitor";
+    if (action === "terminal")
+        return "sh -c 'T=$(command -v konsole || command -v x-terminal-emulator); "
+             + "exec \"$T\" -e sh -c \"command -v htop >/dev/null && exec htop || exec top\"'";
+    return "";
 }

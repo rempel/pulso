@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+// Settings › General: which sensors, update rate, limits and the click action.
 import QtQuick
 import QtQuick.Controls as QQC2
 import QtQuick.Layouts
@@ -10,7 +11,7 @@ KCM.SimpleKCM {
     id: page
 
     property var cfg_sensors: []
-    property alias cfg_showIcons: showIcons.checked
+    property string cfg_clickAction
     property alias cfg_colorize: colorize.checked
     property alias cfg_hideUnavailable: hideUnavailable.checked
     property alias cfg_updateInterval: updateInterval.value
@@ -21,7 +22,7 @@ KCM.SimpleKCM {
 
     // Plasma also hands every page the default values; declare them to keep the log clean
     property var cfg_sensorsDefault
-    property bool cfg_showIconsDefault
+    property string cfg_clickActionDefault
     property bool cfg_colorizeDefault
     property bool cfg_hideUnavailableDefault
     property int cfg_updateIntervalDefault
@@ -40,11 +41,18 @@ KCM.SimpleKCM {
         }
     }
 
+    readonly property var actions: [
+        { value: "popup",    text: i18n("Open the details popup") },
+        { value: "monitor",  text: i18n("Open System Monitor") },
+        { value: "terminal", text: i18n("Open a terminal with htop") },
+        { value: "none",     text: i18n("Do nothing") }
+    ]
+
     Kirigami.FormLayout {
         // KDE's own sensor picker: search, pick any sensor, drag to reorder
         Faces.Choices {
             id: choices
-            Kirigami.FormData.label: i18n("Sensors in the panel:")
+            Kirigami.FormData.label: i18n("Sensors:")
             Layout.fillWidth: true
             Layout.minimumWidth: Kirigami.Units.gridUnit * 18
             supportsColors: false
@@ -59,15 +67,24 @@ KCM.SimpleKCM {
             }
         }
         QQC2.Label {
-            text: i18n("Click to add, drag to reorder.")
+            text: i18n("Click to add, drag to reorder. Customize each one in the “Sensors” page.")
             opacity: 0.7
             font: Kirigami.Theme.smallFont
+            wrapMode: Text.Wrap
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
         }
 
         Item { Kirigami.FormData.isSection: true }
 
-        QQC2.CheckBox { id: showIcons; Kirigami.FormData.label: i18n("Appearance:"); text: i18n("Show icons") }
-        QQC2.CheckBox { id: colorize; text: i18n("Change color above the limits") }
+        QQC2.ComboBox {
+            Kirigami.FormData.label: i18n("When clicked:")
+            model: page.actions
+            textRole: "text"
+            valueRole: "value"
+            currentIndex: Math.max(0, page.actions.findIndex(a => a.value === page.cfg_clickAction))
+            onActivated: page.cfg_clickAction = currentValue
+        }
+        QQC2.CheckBox { id: colorize; Kirigami.FormData.label: i18n("Behavior:"); text: i18n("Change color above the limits") }
         QQC2.CheckBox { id: hideUnavailable; text: i18n("Hide sensors that are unavailable on this computer") }
         RowLayout {
             Kirigami.FormData.label: i18n("Update every:")

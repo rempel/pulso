@@ -1,93 +1,118 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// One sensor in the panel: icon + value. Works for any ksystemstats sensor.
+// One sensor in the panel: icon + optional label + value + optional history line.
 import QtQuick
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.components as PC3
-import org.kde.ksysguard.sensors as Sensors
-import org.kde.ksysguard.formatter as Formatter
-import "logic.js" as Logic
+import org.kde.quickcharts as Charts
 
-GridLayout {
+Item {
     id: metric
 
-    property string sensorId
-    property int updateInterval: 2000
-    property bool showIcon: true
+    property alias sensorId: sm.sensorId
+    property var cfg
+    property var styles
     property bool vertical: false
-    property bool colorize: true
-    property bool hideUnavailable: true
-    property int percentWarn: 75
-    property int percentCrit: 90
-    property int tempWarn: 70
-    property int tempCrit: 85
 
-    readonly property bool isPercent: sensor.unit === Formatter.Units.UnitPercent
-    readonly property bool isTemp: sensor.unit === Formatter.Units.UnitCelsius
-    readonly property bool isRate: sensor.unit === Formatter.Units.UnitByteRate
-    readonly property bool ready: sensor.status === Sensors.Sensor.Ready && Logic.valid(sensor.value)
+    // Emitted on click with the action configured for this sensor
+    signal activated(string action)
 
-    // Unknown/missing sensor (never becomes ready), or a temperature stuck at 0
-    // (e.g. a GPU on the nouveau driver)
-    readonly property bool unavailable: !ready || (isTemp && sensor.value <= 0)
+    readonly property alias model: sm
+    readonly property bool showGraph: cfg.panelGraph && !vertical
+        && (sm.isPercent || sm.isTemp || sm.isRate || sm.rangeMax > 0)
 
-    readonly property string valueText: {
-        if (!ready) return "–";
-        const v = sensor.value;
-        if (isPercent) return Math.round(v) + "%";
-        if (isTemp) return Math.round(v) + "°C";
-        if (isRate) return Logic.speed(v);
-        return sensor.formattedValue;
+    readonly property string fontFamily: cfg.fontFamily !== "" ? cfg.fontFamily : Kirigami.Theme.defaultFont.family
+    readonly property real fontPointSize: cfg.fontSize > 0 ? cfg.fontSize
+        : (vertical ? Kirigami.Theme.smallFont.pointSize : Kirigami.Theme.defaultFont.pointSize)
+    readonly property int iconPx: cfg.iconSize > 0 ? cfg.iconSize : Kirigami.Units.iconSizes.small
+
+    visible: !sm.hidden
+    implicitWidth: grid.implicitWidth
+    implicitHeight: grid.implicitHeight
+    Layout.alignment: Qt.AlignCenter
+
+    MetricModel {
+        id: sm
+        cfg: metric.cfg
+        styles: metric.styles
+        normalColor: Kirigami.Theme.textColor
+        warningColor: Kirigami.Theme.neutralTextColor
+        criticalColor: Kirigami.Theme.negativeTextColor
     }
 
-    // Reserve the widest possible text so the panel doesn't jump around
-    readonly property string widest: isPercent ? "100%" : isTemp ? "100°C" : isRate ? "999 K/s" : ""
+    GridLayout {
+        id: grid
+        anchors.centerIn: parent
+        columns: metric.vertical ? 1 : 4
+        rowSpacing: 0
+        columnSpacing: Kirigami.Units.smallSpacing
 
-    readonly property color tint: {
-        if (!colorize || !ready) return Kirigami.Theme.textColor;
-        let lvl = 0;
-        if (isPercent) lvl = Logic.level(sensor.value, percentWarn, percentCrit);
-        else if (isTemp) lvl = Logic.level(sensor.value, tempWarn, tempCrit);
-        return lvl === 2 ? Kirigami.Theme.negativeTextColor
-             : lvl === 1 ? Kirigami.Theme.neutralTextColor
-             : Kirigami.Theme.textColor;
-    }
-
-    visible: !(hideUnavailable && unavailable)
-    columns: vertical ? 1 : 2
-    rowSpacing: 0
-    columnSpacing: Kirigami.Units.smallSpacing
-
-    Sensors.Sensor {
-        id: sensor
-        sensorId: metric.sensorId
-        updateRateLimit: metric.updateInterval
-    }
-
-    Kirigami.Icon {
-        visible: metric.showIcon
-        source: Qt.resolvedUrl("../icons/pulso-" + Logic.iconFor(metric.sensorId) + ".svg")
-        isMask: true
-        color: metric.tint
-        Layout.preferredWidth: Kirigami.Units.iconSizes.small
-        Layout.preferredHeight: Kirigami.Units.iconSizes.small
-        Layout.alignment: Qt.AlignCenter
-    }
-
-    PC3.Label {
-        id: label
-        text: metric.valueText
-        color: metric.tint
-        font.pointSize: metric.vertical ? Kirigami.Theme.smallFont.pointSize : Kirigami.Theme.defaultFont.pointSize
-        font.features: { "tnum": 1 }
-        horizontalAlignment: metric.vertical ? Text.AlignHCenter : Text.AlignRight
-        Layout.minimumWidth: metric.vertical ? 0 : widthProbe.advanceWidth
-        Layout.alignment: Qt.AlignCenter
-
-        TextMetrics {
-            id: widthProbe
-            font: label.font
-            text: metric.widest
+        Kirigami.Icon {
+            visible: metric.cfg.showIcons
+            source: sm.iconSource
+            isMask: sm.iconMask
+            color: sm.tint
+            Layout.preferredWidth: metric.iconPx
+            Layout.preferredHeight: metric.iconPx
+            Layout.alignment: Qt.AlignCenter
         }
+
+        PC3.Label {
+            visible: sm.style.label !== ""
+            text: sm.style.label
+            color: sm.tint
+            font.family: metric.fontFamily
+            font.pointSize: metric.fontPointSize
+            font.bold: metric.cfg.fontBold
+            font.features: { "tnum": 1 }
+            opacity: 0.8
+            Layout.alignment: Qt.AlignCenter
+        }
+
+        PC3.Label {
+            id: valueLabel
+            text: sm.valueText
+            color: sm.tint
+            font.family: metric.fontFamily
+            font.pointSize: metric.fontPointSize
+            font.bold: metric.cfg.fontBold
+            font.features: { "tnum": 1 }
+            horizontalAlignment: metric.vertical ? Text.AlignHCenter : Text.AlignRight
+            Layout.minimumWidth: metric.vertical ? 0 : widthProbe.advanceWidth
+            Layout.alignment: Qt.AlignCenter
+
+            TextMetrics {
+                id: widthProbe
+                font: valueLabel.font
+                text: sm.widest
+            }
+        }
+
+        Charts.LineChart {
+            visible: metric.showGraph
+            Layout.preferredWidth: metric.cfg.panelGraphWidth
+            Layout.preferredHeight: metric.iconPx
+            Layout.alignment: Qt.AlignCenter
+            lineWidth: 1
+            fillOpacity: 0.25
+            yRange {
+                from: 0
+                to: sm.rangeMax > 0 ? sm.rangeMax : 100
+                automatic: sm.rangeMax <= 0
+            }
+            colorSource: Charts.SingleValueSource { value: sm.tint }
+            valueSources: Charts.HistoryProxySource {
+                source: Charts.SingleValueSource { value: sm.value }
+                maximumHistory: 30
+                interval: metric.cfg.updateInterval
+                fillMode: Charts.HistoryProxySource.FillFromEnd
+            }
+        }
+    }
+
+    // Per-sensor click action (the popup by default)
+    MouseArea {
+        anchors.fill: parent
+        onClicked: metric.activated(sm.action)
     }
 }

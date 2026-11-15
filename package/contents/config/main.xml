@@ -4,21 +4,55 @@
       xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
   <kcfgfile name=""/>
   <group name="General">
-    <!-- Sensors shown in the panel, in order (any ksystemstats sensor id) -->
+    <!-- Sensors shown, in order (any ksystemstats sensor id) -->
     <entry name="sensors" type="StringList">
       <default>cpu/all/usage,memory/physical/usedPercent,cpu/all/averageTemperature</default>
     </entry>
 
-    <!-- Appearance -->
-    <entry name="showIcons" type="Bool"><default>true</default></entry>
+    <!-- Per-sensor customization, as JSON:
+         { "<sensorId>": { "label": "", "icon": "" | "theme:<name>" | "file:///…",
+                           "iconMask": true, "color": "" | "#rrggbb",
+                           "decimals": -1, "action": "" | "popup" | "monitor" | "terminal" | "none" } } -->
+    <entry name="styles" type="String"><default>{}</default></entry>
+
     <entry name="colorize" type="Bool"><default>true</default></entry>
     <entry name="hideUnavailable" type="Bool"><default>true</default></entry>
     <entry name="updateInterval" type="Int"><default>2000</default></entry>
+    <entry name="clickAction" type="String"><default>popup</default></entry>
 
     <!-- Thresholds: warning (orange) / critical (red) -->
     <entry name="percentWarn" type="Int"><default>75</default></entry>
     <entry name="percentCrit" type="Int"><default>90</default></entry>
     <entry name="tempWarn" type="Int"><default>70</default></entry>
     <entry name="tempCrit" type="Int"><default>85</default></entry>
+  </group>
+
+  <group name="Appearance">
+    <entry name="showIcons" type="Bool"><default>true</default></entry>
+    <entry name="iconSize" type="Int"><default>0</default></entry>           <!-- 0 = theme default -->
+    <entry name="fontFamily" type="String"><default></default></entry>      <!-- empty = theme font -->
+    <entry name="fontSize" type="Int"><default>0</default></entry>           <!-- 0 = theme default -->
+    <entry name="fontBold" type="Bool"><default>false</default></entry>
+    <entry name="itemSpacing" type="Int"><default>-1</default></entry>       <!-- -1 = theme default -->
+    <entry name="panelGraph" type="Bool"><default>false</default></entry>    <!-- history line next to each value -->
+    <entry name="panelGraphWidth" type="Int"><default>36</default></entry>
+  </group>
+
+  <group name="Desktop">
+    <entry name="desktopStyle" type="String"><default>gauge</default></entry>  <!-- gauge | graph | text -->
+    <entry name="desktopColumns" type="Int"><default>0</default></entry>       <!-- 0 = automatic -->
+    <entry name="desktopHistory" type="Int"><default>60</default></entry>      <!-- samples kept for graphs -->
+    <entry name="desktopCardBackground" type="Bool"><default>true</default></entry>
+  </group>
+
+  <group name="Alerts">
+    <entry name="alertsEnabled" type="Bool"><default>false</default></entry>
+    <entry name="alertSeconds" type="Int"><default>30</default></entry>
+    <entry name="alertCooldown" type="Int"><default>10</default></entry>      <!-- minutes -->
+  </group>
+
+  <group name="Popup">
+    <entry name="showProcesses" type="Bool"><default>true</default></entry>
+    <entry name="processCount" type="Int"><default>5</default></entry>
   </group>
 </kcfg>

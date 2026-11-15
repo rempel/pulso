@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// Pulso — Vitals-style system monitor for the Plasma 6 panel.
+// Pulso — Vitals-style system monitor for the Plasma 6 panel and desktop.
 // Everything is read through KDE's own sensor service (ksystemstats):
-// no network access, no shell scripts.
+// no network access, and only fixed, built-in commands are ever launched.
 import QtQuick
 import QtQuick.Layouts
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
-import org.kde.plasma.components as PC3
 import org.kde.plasma.plasma5support as P5Support
 import org.kde.kirigami as Kirigami
 import org.kde.ksysguard.sensors as Sensors
@@ -16,53 +15,56 @@ PlasmoidItem {
     id: root
 
     readonly property var cfg: Plasmoid.configuration
-    readonly property int rate: cfg.updateInterval
+    readonly property var styles: Logic.parseStyles(cfg.styles)
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
+    readonly property bool onDesktop: Plasmoid.location === PlasmaCore.Types.Desktop
+                                   || Plasmoid.formFactor === PlasmaCore.Types.Planar
 
-    preferredRepresentation: compactRepresentation
+    // On the desktop the cards are the widget itself; in a panel they live in a popup
+    preferredRepresentation: onDesktop ? fullRepresentation : compactRepresentation
+    switchWidth: Kirigami.Units.gridUnit * 4
+    switchHeight: Kirigami.Units.gridUnit * 4
+    Plasmoid.backgroundHints: PlasmaCore.Types.DefaultBackground | PlasmaCore.Types.ConfigurableBackground
+
     toolTipMainText: "Pulso"
-    toolTipSubText: i18n("CPU %1 · RAM %2 · %3", pct(cpuUsage.value), pct(ramPct.value), temp(cpuTemp.value))
+    toolTipSubText: i18n("CPU %1 · RAM %2 · %3", pct(tipCpu.value), pct(tipRam.value), temp(tipTemp.value))
 
-    // ── Sensors used by the popup ────────────────────────────
-    Sensors.Sensor { id: cpuUsage;   sensorId: "cpu/all/usage";               updateRateLimit: root.rate }
-    Sensors.Sensor { id: cpuFreq;    sensorId: "cpu/all/averageFrequency";    updateRateLimit: root.rate }
-    Sensors.Sensor { id: cpuTemp;    sensorId: "cpu/all/averageTemperature";  updateRateLimit: root.rate }
-    Sensors.Sensor { id: cpuTempMax; sensorId: "cpu/all/maximumTemperature";  updateRateLimit: root.rate }
-    Sensors.Sensor { id: cpuName;    sensorId: "cpu/all/name" }
-    Sensors.Sensor { id: coreCount;  sensorId: "cpu/all/coreCount" }
-    Sensors.Sensor { id: gpuName;    sensorId: "gpu/gpu0/name" }
-    Sensors.Sensor { id: gpuUsage;   sensorId: "gpu/gpu0/usage";              updateRateLimit: root.rate }
-    Sensors.Sensor { id: gpuTemp;    sensorId: "gpu/gpu0/temperature";        updateRateLimit: root.rate }
-    Sensors.Sensor { id: gpuVram;    sensorId: "gpu/gpu0/usedVram";           updateRateLimit: root.rate }
-    Sensors.Sensor { id: gpuVramMax; sensorId: "gpu/gpu0/totalVram" }
-    Sensors.Sensor { id: ramPct;     sensorId: "memory/physical/usedPercent"; updateRateLimit: root.rate }
-    Sensors.Sensor { id: ramUsed;    sensorId: "memory/physical/used";        updateRateLimit: root.rate }
-    Sensors.Sensor { id: ramTotal;   sensorId: "memory/physical/total" }
-    Sensors.Sensor { id: swapPct;    sensorId: "memory/swap/usedPercent";     updateRateLimit: root.rate }
-    Sensors.Sensor { id: swapTotal;  sensorId: "memory/swap/total" }
-    Sensors.Sensor { id: netDown;    sensorId: "network/all/download";        updateRateLimit: root.rate }
-    Sensors.Sensor { id: netUp;      sensorId: "network/all/upload";          updateRateLimit: root.rate }
-    Sensors.Sensor { id: diskPct;    sensorId: "disk/all/usedPercent";        updateRateLimit: root.rate }
-    Sensors.Sensor { id: diskFree;   sensorId: "disk/all/free";               updateRateLimit: root.rate }
-    Sensors.Sensor { id: uptime;     sensorId: "os/system/uptime";            updateRateLimit: 60000 }
+    Sensors.Sensor { id: tipCpu;  sensorId: "cpu/all/usage";               updateRateLimit: root.cfg.updateInterval }
+    Sensors.Sensor { id: tipRam;  sensorId: "memory/physical/usedPercent"; updateRateLimit: root.cfg.updateInterval }
+    Sensors.Sensor { id: tipTemp; sensorId: "cpu/all/averageTemperature";  updateRateLimit: root.cfg.updateInterval }
 
-    // Opens KDE's System Monitor (fixed command, no user input)
+    function pct(v)  { return Logic.valid(v) ? Math.round(v) + "%" : "–" }
+    function temp(v) { return Logic.valid(v) && v > 0 ? Math.round(v) + "°C" : "–" }
+
+    // ── Click actions (fixed commands only) ──────────────────
     P5Support.DataSource {
         id: launcher
         engine: "executable"
         onNewData: (source, data) => disconnectSource(source)
     }
 
-    function pct(v)  { return Logic.valid(v) ? Math.round(v) + "%" : "–" }
-    function temp(v) { return Logic.valid(v) && v > 0 ? Math.round(v) + "°C" : "–" }
-    function has(sensor) { return sensor.status === Sensors.Sensor.Ready }
+    function runAction(action) {
+        if (action === "none") return
+        if (action === "popup" || action === "") {
+            if (!onDesktop) root.expanded = !root.expanded
+            return
+        }
+        const cmd = Logic.command(action)
+        if (cmd !== "") {
+            launcher.connectSource(cmd)
+            root.expanded = false
+        }
+    }
 
-    function tint(v, warn, crit) {
-        if (!cfg.colorize) return Kirigami.Theme.textColor
-        const lvl = Logic.level(v, warn, crit)
-        return lvl === 2 ? Kirigami.Theme.negativeTextColor
-             : lvl === 1 ? Kirigami.Theme.neutralTextColor
-             : Kirigami.Theme.textColor
+    // ── Alerts: one watcher per configured sensor ────────────
+    Instantiator {
+        model: root.cfg.alertsEnabled ? root.cfg.sensors : []
+        delegate: AlertWatcher {
+            required property string modelData
+            sensorId: modelData
+            cfg: root.cfg
+            styles: root.styles
+        }
     }
 
     // ── In the panel ─────────────────────────────────────────
@@ -89,14 +91,14 @@ PlasmoidItem {
         Layout.preferredHeight: root.vertical ? contentHeight : -1
 
         hoverEnabled: true
-        onClicked: root.expanded = !root.expanded
+        onClicked: root.runAction(root.cfg.clickAction)
 
         GridLayout {
             id: grid
             anchors.centerIn: parent
             flow: root.vertical ? GridLayout.TopToBottom : GridLayout.LeftToRight
-            rowSpacing: Kirigami.Units.smallSpacing
-            columnSpacing: Kirigami.Units.largeSpacing
+            rowSpacing: root.cfg.itemSpacing >= 0 ? root.cfg.itemSpacing : Kirigami.Units.smallSpacing
+            columnSpacing: root.cfg.itemSpacing >= 0 ? root.cfg.itemSpacing : Kirigami.Units.largeSpacing
 
             Repeater {
                 id: metrics
@@ -105,17 +107,12 @@ PlasmoidItem {
                 onItemRemoved: compact.recount()
                 delegate: Metric {
                     required property string modelData
-                    onVisibleChanged: compact.recount()
                     sensorId: modelData
-                    updateInterval: root.rate
+                    cfg: root.cfg
+                    styles: root.styles
                     vertical: root.vertical
-                    showIcon: root.cfg.showIcons
-                    colorize: root.cfg.colorize
-                    hideUnavailable: root.cfg.hideUnavailable
-                    percentWarn: root.cfg.percentWarn
-                    percentCrit: root.cfg.percentCrit
-                    tempWarn: root.cfg.tempWarn
-                    tempCrit: root.cfg.tempCrit
+                    onVisibleChanged: compact.recount()
+                    onActivated: action => root.runAction(action)
                 }
             }
         }
@@ -134,104 +131,31 @@ PlasmoidItem {
         }
     }
 
-    // ── Popup ────────────────────────────────────────────────
-    fullRepresentation: ColumnLayout {
-        Layout.preferredWidth: Kirigami.Units.gridUnit * 20
-        Layout.minimumWidth: Kirigami.Units.gridUnit * 16
-        Layout.minimumHeight: implicitHeight
-        spacing: Kirigami.Units.smallSpacing
+    // ── Popup (panel) or cards (desktop) ─────────────────────
+    fullRepresentation: Loader {
+        Layout.minimumWidth: item ? item.Layout.minimumWidth : 0
+        Layout.minimumHeight: item ? item.Layout.minimumHeight : 0
+        Layout.preferredWidth: item ? item.Layout.preferredWidth : 0
+        Layout.preferredHeight: item ? item.Layout.preferredHeight : 0
 
-        SectionHeader { icon: "cpu"; title: i18n("Processor"); subtitle: cpuName.value || ""; Layout.topMargin: 0 }
-        DetailRow {
-            label: i18n("Usage")
-            value: pct(cpuUsage.value)
-            fraction: Logic.valid(cpuUsage.value) ? cpuUsage.value / 100 : 0
-            color: tint(cpuUsage.value, cfg.percentWarn, cfg.percentCrit)
-        }
-        DetailRow { label: i18n("Average frequency"); value: cpuFreq.formattedValue; visible: has(cpuFreq) }
-        DetailRow { label: i18n("Cores"); value: coreCount.formattedValue; visible: has(coreCount) }
+        sourceComponent: root.onDesktop ? desktopComponent : popupComponent
+    }
 
-        SectionHeader { icon: "temp"; title: i18n("Temperature"); visible: temp(cpuTemp.value) !== "–" }
-        DetailRow {
-            visible: temp(cpuTemp.value) !== "–"
-            label: i18n("CPU (average)")
-            value: temp(cpuTemp.value)
-            color: tint(cpuTemp.value, cfg.tempWarn, cfg.tempCrit)
+    Component {
+        id: popupComponent
+        PopupView {
+            cfg: root.cfg
+            active: root.expanded
+            onOpenMonitor: root.runAction("monitor")
         }
-        DetailRow {
-            visible: temp(cpuTempMax.value) !== "–"
-            label: i18n("CPU (hottest core)")
-            value: temp(cpuTempMax.value)
-            color: tint(cpuTempMax.value, cfg.tempWarn, cfg.tempCrit)
-        }
+    }
 
-        SectionHeader { icon: "gpu"; title: i18n("Graphics card"); subtitle: gpuName.value || ""; visible: has(gpuName) }
-        DetailRow {
-            visible: has(gpuUsage) && Logic.valid(gpuUsage.value)
-            label: i18n("Usage")
-            value: pct(gpuUsage.value)
-            fraction: Logic.valid(gpuUsage.value) ? gpuUsage.value / 100 : 0
-            color: tint(gpuUsage.value, cfg.percentWarn, cfg.percentCrit)
-        }
-        DetailRow {
-            visible: temp(gpuTemp.value) !== "–"
-            label: i18n("Temperature")
-            value: temp(gpuTemp.value)
-            color: tint(gpuTemp.value, cfg.tempWarn, cfg.tempCrit)
-        }
-        DetailRow {
-            visible: has(gpuVram) && gpuVramMax.value > 0
-            label: i18n("Video memory")
-            value: gpuVram.formattedValue + " / " + gpuVramMax.formattedValue
-            fraction: gpuVramMax.value > 0 ? gpuVram.value / gpuVramMax.value : 0
-        }
-
-        SectionHeader { icon: "ram"; title: i18n("Memory") }
-        DetailRow {
-            label: i18n("RAM")
-            value: ramUsed.formattedValue + " / " + ramTotal.formattedValue
-            fraction: Logic.valid(ramPct.value) ? ramPct.value / 100 : 0
-            color: tint(ramPct.value, cfg.percentWarn, cfg.percentCrit)
-        }
-        DetailRow {
-            visible: swapTotal.value > 0
-            label: i18n("Swap")
-            value: pct(swapPct.value)
-            fraction: Logic.valid(swapPct.value) ? swapPct.value / 100 : 0
-        }
-
-        SectionHeader { icon: "net"; title: i18n("Network") }
-        DetailRow { label: i18n("Download"); value: Logic.speed(netDown.value) }
-        DetailRow { label: i18n("Upload"); value: Logic.speed(netUp.value) }
-
-        SectionHeader { icon: "disk"; title: i18n("Disk"); visible: has(diskPct) }
-        DetailRow {
-            visible: has(diskPct)
-            label: i18n("Used")
-            value: i18n("%1 (%2 free)", pct(diskPct.value), diskFree.formattedValue)
-            fraction: Logic.valid(diskPct.value) ? diskPct.value / 100 : 0
-        }
-
-        Kirigami.Separator {
-            Layout.fillWidth: true
-            Layout.topMargin: Kirigami.Units.largeSpacing
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            PC3.Label {
-                text: i18n("Up for %1", Logic.duration(uptime.value))
-                opacity: 0.6
-                Layout.fillWidth: true
-            }
-            PC3.ToolButton {
-                text: i18n("System Monitor")
-                icon.name: "utilities-system-monitor"
-                onClicked: {
-                    launcher.connectSource("plasma-systemmonitor")
-                    root.expanded = false
-                }
-            }
+    Component {
+        id: desktopComponent
+        DesktopView {
+            cfg: root.cfg
+            styles: root.styles
+            onActivated: action => root.runAction(action)
         }
     }
 }

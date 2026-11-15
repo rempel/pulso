@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 msgid ""
 msgstr ""
-"Project-Id-Version: pulso 1.0.1\n"
+"Project-Id-Version: pulso 2.0.0\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -12,39 +12,56 @@ msgstr ""
 msgid "General"
 msgstr "Geral"
 
-msgid "Sensors in the panel:"
-msgstr "Sensores na barra:"
+msgid "Sensors"
+msgstr "Sensores"
 
-msgid "Click to add, drag to reorder."
-msgstr "Clique para adicionar, arraste para reordenar."
+msgid "Appearance"
+msgstr "Aparência"
 
-msgid "Appearance:"
-msgstr "Aparência:"
+msgid "Desktop"
+msgstr "Área de trabalho"
 
-msgid "Show icons"
-msgstr "Mostrar ícones"
+msgid "Alerts & popup"
+msgstr "Alertas e popup"
 
-msgid "Change color above the limits"
-msgstr "Mudar de cor acima dos limites"
+msgid "Presets"
+msgstr "Predefinições"
 
-msgid "Hide sensors that are unavailable on this computer"
-msgstr "Esconder sensores indisponíveis neste computador"
+msgid "%1 is critical"
+msgstr "%1 está em nível crítico"
 
-msgid "Update every:"
-msgstr "Atualizar a cada:"
+msgid "%1 for more than %2 seconds."
+msgstr "%1 há mais de %2 segundos."
 
-msgctxt "milliseconds"
-msgid "ms"
-msgstr "ms"
+msgid "No sensors selected. Right-click → Configure."
+msgstr "Nenhum sensor escolhido. Clique com o botão direito → Configurar."
 
-msgid "Percentages (warning / critical):"
-msgstr "Porcentagens (alerta / crítico):"
+msgid "CPU"
+msgstr "CPU"
 
-msgid "Temperatures (warning / critical):"
-msgstr "Temperaturas (alerta / crítico):"
+msgid "Swap"
+msgstr "Swap"
 
-msgid "CPU %1 · RAM %2 · %3"
-msgstr "CPU %1 · RAM %2 · %3"
+msgid "Memory"
+msgstr "Memória"
+
+msgid "CPU temperature"
+msgstr "Temperatura da CPU"
+
+msgid "GPU temperature"
+msgstr "Temperatura da GPU"
+
+msgid "GPU"
+msgstr "GPU"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "Upload"
+msgstr "Upload"
+
+msgid "Disk"
+msgstr "Disco"
 
 msgid "Processor"
 msgstr "Processador"
@@ -73,26 +90,11 @@ msgstr "Placa de vídeo"
 msgid "Video memory"
 msgstr "Memória de vídeo"
 
-msgid "Memory"
-msgstr "Memória"
-
 msgid "RAM"
 msgstr "RAM"
 
-msgid "Swap"
-msgstr "Swap"
-
 msgid "Network"
 msgstr "Rede"
-
-msgid "Download"
-msgstr "Download"
-
-msgid "Upload"
-msgstr "Upload"
-
-msgid "Disk"
-msgstr "Disco"
 
 msgid "Used"
 msgstr "Usado"
@@ -100,8 +102,287 @@ msgstr "Usado"
 msgid "%1 (%2 free)"
 msgstr "%1 (%2 livres)"
 
+msgid "Top processes"
+msgstr "Processos que mais usam CPU"
+
 msgid "Up for %1"
 msgstr "Ligado há %1"
 
 msgid "System Monitor"
 msgstr "Monitor do Sistema"
+
+msgid "End?"
+msgstr "Encerrar?"
+
+msgid "End process (click twice)"
+msgstr "Encerrar processo (clique duas vezes)"
+
+msgid "Loading…"
+msgstr "Carregando…"
+
+msgid "Alerts:"
+msgstr "Alertas:"
+
+msgid "Notify me when a sensor stays at the critical level"
+msgstr "Avisar quando um sensor ficar no nível crítico"
+
+msgid "For at least:"
+msgstr "Por pelo menos:"
+
+msgid "seconds"
+msgstr "segundos"
+
+msgid "Then wait:"
+msgstr "Depois esperar:"
+
+msgid "minutes before warning again"
+msgstr "minutos antes de avisar de novo"
+
+msgid "Uses the critical limits from “General”, for percentages and temperatures."
+msgstr "Usa os limites críticos de “Geral”, para porcentagens e temperaturas."
+
+msgid "Popup:"
+msgstr "Popup:"
+
+msgid "Show the processes using the most CPU"
+msgstr "Mostrar os processos que mais usam CPU"
+
+msgid "How many:"
+msgstr "Quantos:"
+
+msgctxt "pixels"
+msgid "px"
+msgstr "px"
+
+msgctxt "points"
+msgid "pt"
+msgstr "pt"
+
+msgid "Theme default"
+msgstr "Padrão do tema"
+
+msgid "Icons:"
+msgstr "Ícones:"
+
+msgid "Show icons"
+msgstr "Mostrar ícones"
+
+msgid "Icon size:"
+msgstr "Tamanho do ícone:"
+
+msgid "(theme default)"
+msgstr "(padrão do tema)"
+
+msgid "Font:"
+msgstr "Fonte:"
+
+msgid "Font size:"
+msgstr "Tamanho da fonte:"
+
+msgid "Bold"
+msgstr "Negrito"
+
+msgid "Space between items:"
+msgstr "Espaço entre itens:"
+
+msgid "History:"
+msgstr "Histórico:"
+
+msgid "Show a small graph next to each value in the panel"
+msgstr "Mostrar um mini-gráfico ao lado de cada valor na barra"
+
+msgid "Graph width:"
+msgstr "Largura do gráfico:"
+
+msgid "Gauge"
+msgstr "Medidor"
+
+msgid "History graph"
+msgstr "Gráfico de histórico"
+
+msgid "Big number"
+msgstr "Número grande"
+
+msgid "These settings apply when Pulso is placed on the desktop. Right-click the desktop → Add Widgets… → Pulso."
+msgstr "Estas opções valem quando o Pulso está na área de trabalho. Clique com o botão direito na área de trabalho → Adicionar widgets… → Pulso."
+
+msgid "Card style:"
+msgstr "Estilo dos cards:"
+
+msgid "Columns:"
+msgstr "Colunas:"
+
+msgid "(automatic)"
+msgstr "(automático)"
+
+msgid "Graph history:"
+msgstr "Histórico do gráfico:"
+
+msgid "samples"
+msgstr "amostras"
+
+msgid "Cards:"
+msgstr "Cards:"
+
+msgid "Draw a background behind each card"
+msgstr "Desenhar um fundo atrás de cada card"
+
+msgid "The widget background (standard, translucent or none) is set from the desktop edit mode."
+msgstr "O fundo do widget (padrão, translúcido ou nenhum) é definido no modo de edição da área de trabalho."
+
+msgctxt "milliseconds"
+msgid "ms"
+msgstr "ms"
+
+msgid "Open the details popup"
+msgstr "Abrir o popup de detalhes"
+
+msgid "Open System Monitor"
+msgstr "Abrir o Monitor do Sistema"
+
+msgid "Open a terminal with htop"
+msgstr "Abrir um terminal com htop"
+
+msgid "Do nothing"
+msgstr "Não fazer nada"
+
+msgid "Sensors:"
+msgstr "Sensores:"
+
+msgid "Click to add, drag to reorder. Customize each one in the “Sensors” page."
+msgstr "Clique para adicionar, arraste para reordenar. Personalize cada um na página “Sensores”."
+
+msgid "When clicked:"
+msgstr "Ao clicar:"
+
+msgid "Behavior:"
+msgstr "Comportamento:"
+
+msgid "Change color above the limits"
+msgstr "Mudar de cor acima dos limites"
+
+msgid "Hide sensors that are unavailable on this computer"
+msgstr "Esconder sensores indisponíveis neste computador"
+
+msgid "Update every:"
+msgstr "Atualizar a cada:"
+
+msgid "Percentages (warning / critical):"
+msgstr "Porcentagens (alerta / crítico):"
+
+msgid "Temperatures (warning / critical):"
+msgstr "Temperaturas (alerta / crítico):"
+
+msgid "Choose an icon"
+msgstr "Escolha um ícone"
+
+msgid "Images (*.svg *.svgz *.png)"
+msgstr "Imagens (*.svg *.svgz *.png)"
+
+msgid "Sensors added in “General” show up here after you apply them."
+msgstr "Sensores adicionados em “Geral” aparecem aqui depois de aplicar."
+
+msgid "Reset"
+msgstr "Redefinir"
+
+msgid "Label:"
+msgstr "Rótulo:"
+
+msgid "None (icon only)"
+msgstr "Nenhum (só o ícone)"
+
+msgid "Icon:"
+msgstr "Ícone:"
+
+msgid "Automatic"
+msgstr "Automático"
+
+msgid "From theme…"
+msgstr "Do tema…"
+
+msgid "File…"
+msgstr "Arquivo…"
+
+msgid "Paint the icon with the text color (for single-color icons)"
+msgstr "Pintar o ícone com a cor do texto (para ícones de uma cor só)"
+
+msgid "Color:"
+msgstr "Cor:"
+
+msgid "Custom"
+msgstr "Personalizada"
+
+msgid "Orange/red above the limits still win."
+msgstr "Laranja/vermelho acima dos limites continuam valendo."
+
+msgid "Decimals:"
+msgstr "Casas decimais:"
+
+msgid "Same as the widget"
+msgstr "Igual ao widget"
+
+msgid "No sensors selected yet."
+msgstr "Nenhum sensor escolhido ainda."
+
+msgid "Default"
+msgstr "Padrão"
+
+msgid "Back to the original look and sensors."
+msgstr "Volta ao visual e aos sensores originais."
+
+msgid "Colorful"
+msgstr "Colorido"
+
+msgid "A different color for each kind of sensor."
+msgstr "Uma cor diferente para cada tipo de sensor."
+
+msgid "Text labels"
+msgstr "Rótulos de texto"
+
+msgid "Short names instead of icons: CPU, RAM, TEMP…"
+msgstr "Nomes curtos no lugar dos ícones: CPU, RAM, TEMP…"
+
+msgid "Graphs"
+msgstr "Gráficos"
+
+msgid "A small history line next to each value."
+msgstr "Uma pequena linha de histórico ao lado de cada valor."
+
+msgid "Compact"
+msgstr "Compacto"
+
+msgid "Tighter spacing and no graphs."
+msgstr "Espaçamento menor e sem gráficos."
+
+msgid "Pick one, then press Apply. You can combine them."
+msgstr "Escolha uma e clique em Aplicar. Dá para combinar."
+
+msgid "“%1” is ready. Press Apply to use it."
+msgstr "“%1” está pronta. Clique em Aplicar para usar."
+
+msgid "Backup and share"
+msgstr "Backup e compartilhamento"
+
+msgid "Your whole setup as text. Copy it to back it up or share it; paste one here and press Import to load it."
+msgstr "Toda a sua configuração em texto. Copie para guardar ou compartilhar; cole uma aqui e clique em Importar para carregar."
+
+msgid "Copy"
+msgstr "Copiar"
+
+msgid "Copied to the clipboard."
+msgstr "Copiado para a área de transferência."
+
+msgid "Import"
+msgstr "Importar"
+
+msgid "Imported. Press Apply to use it."
+msgstr "Importado. Clique em Aplicar para usar."
+
+msgid "This doesn't look like a Pulso setup."
+msgstr "Isto não parece uma configuração do Pulso."
+
+msgid "Show current"
+msgstr "Mostrar a atual"
+
+msgid "CPU %1 · RAM %2 · %3"
+msgstr "CPU %1 · RAM %2 · %3"
