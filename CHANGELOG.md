@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Gauges get a little breathing room inside the desktop cards.
+- New README with a banner, logo and screenshots of every view and settings page.
+
 ## 2.0.0 — 2026-11-15
 
 - **Per-sensor customization**: label, icon (automatic, from the icon theme, or your own SVG/PNG), color, decimals and click action.

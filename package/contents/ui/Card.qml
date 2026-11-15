@@ -82,8 +82,8 @@ Rectangle {
                 id: gauge
                 visible: card.effectiveStyle === "gauge"
                 anchors.centerIn: parent
-                width: body.side
-                height: body.side
+                width: body.side * 0.9
+                height: body.side * 0.9
                 filled: false
                 thickness: Math.max(4, body.side * 0.09)
                 fromAngle: -135
@@ -130,7 +130,7 @@ Rectangle {
                 font.family: card.fontFamily
                 font.bold: true
                 font.features: { "tnum": 1 }
-                font.pixelSize: card.effectiveStyle === "gauge" ? Math.max(10, body.side * 0.22)
+                font.pixelSize: card.effectiveStyle === "gauge" ? Math.max(10, body.side * 0.2)
                               : Math.max(12, Math.min(body.height * 0.35, body.width * 0.25))
                 horizontalAlignment: Text.AlignHCenter
                 anchors.horizontalCenter: parent.horizontalCenter
