@@ -1,0 +1,4 @@
+dist/
+package/contents/locale/
+*.mo
+__pycache__/

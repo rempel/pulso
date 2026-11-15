@@ -1,0 +1,107 @@
+# Brazilian Portuguese translation of Pulso
+# SPDX-License-Identifier: GPL-3.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: pulso 1.0.0\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "General"
+msgstr "Geral"
+
+msgid "Sensors in the panel:"
+msgstr "Sensores na barra:"
+
+msgid "Click to add, drag to reorder."
+msgstr "Clique para adicionar, arraste para reordenar."
+
+msgid "Appearance:"
+msgstr "Aparência:"
+
+msgid "Show icons"
+msgstr "Mostrar ícones"
+
+msgid "Change color above the limits"
+msgstr "Mudar de cor acima dos limites"
+
+msgid "Hide sensors that are unavailable on this computer"
+msgstr "Esconder sensores indisponíveis neste computador"
+
+msgid "Update every:"
+msgstr "Atualizar a cada:"
+
+msgctxt "milliseconds"
+msgid "ms"
+msgstr "ms"
+
+msgid "Percentages (warning / critical):"
+msgstr "Porcentagens (alerta / crítico):"
+
+msgid "Temperatures (warning / critical):"
+msgstr "Temperaturas (alerta / crítico):"
+
+msgid "CPU %1 · RAM %2 · %3"
+msgstr "CPU %1 · RAM %2 · %3"
+
+msgid "Processor"
+msgstr "Processador"
+
+msgid "Usage"
+msgstr "Uso"
+
+msgid "Average frequency"
+msgstr "Frequência média"
+
+msgid "Cores"
+msgstr "Núcleos"
+
+msgid "Temperature"
+msgstr "Temperatura"
+
+msgid "CPU (average)"
+msgstr "CPU (média)"
+
+msgid "CPU (hottest core)"
+msgstr "CPU (núcleo mais quente)"
+
+msgid "Graphics card"
+msgstr "Placa de vídeo"
+
+msgid "Video memory"
+msgstr "Memória de vídeo"
+
+msgid "Memory"
+msgstr "Memória"
+
+msgid "RAM"
+msgstr "RAM"
+
+msgid "Swap"
+msgstr "Swap"
+
+msgid "Network"
+msgstr "Rede"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "Upload"
+msgstr "Upload"
+
+msgid "Disk"
+msgstr "Disco"
+
+msgid "Used"
+msgstr "Usado"
+
+msgid "%1 (%2 free)"
+msgstr "%1 (%2 livres)"
+
+msgid "Up for %1"
+msgstr "Ligado há %1"
+
+msgid "System Monitor"
+msgstr "Monitor do Sistema"

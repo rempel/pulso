@@ -1,0 +1,17 @@
+{
+    "KPlugin": {
+        "Id": "io.github.rempel.pulso",
+        "Name": "Pulso",
+        "Description": "Vitals-style system monitor for the panel: CPU, RAM, temperatures, network and any other sensor",
+        "Description[pt_BR]": "Monitor de sistema no estilo Vitals para a barra: CPU, RAM, temperaturas, rede e qualquer outro sensor",
+        "Icon": "utilities-system-monitor",
+        "Category": "System Information",
+        "Authors": [{ "Name": "Gabriel Rempel" }],
+        "License": "GPL-3.0-or-later",
+        "Version": "1.0.0",
+        "Website": "https://github.com/rempel/pulso",
+        "BugReportUrl": "https://github.com/rempel/pulso/issues"
+    },
+    "KPackageStructure": "Plasma/Applet",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

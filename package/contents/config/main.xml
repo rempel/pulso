@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+  <kcfgfile name=""/>
+  <group name="General">
+    <!-- Sensors shown in the panel, in order (any ksystemstats sensor id) -->
+    <entry name="sensors" type="StringList">
+      <default>cpu/all/usage,memory/physical/usedPercent,cpu/all/averageTemperature</default>
+    </entry>
+
+    <!-- Appearance -->
+    <entry name="showIcons" type="Bool"><default>true</default></entry>
+    <entry name="colorize" type="Bool"><default>true</default></entry>
+    <entry name="hideUnavailable" type="Bool"><default>true</default></entry>
+    <entry name="updateInterval" type="Int"><default>2000</default></entry>
+
+    <!-- Thresholds: warning (orange) / critical (red) -->
+    <entry name="percentWarn" type="Int"><default>75</default></entry>
+    <entry name="percentCrit" type="Int"><default>90</default></entry>
+    <entry name="tempWarn" type="Int"><default>70</default></entry>
+    <entry name="tempCrit" type="Int"><default>85</default></entry>
+  </group>
+</kcfg>
